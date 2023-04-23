@@ -27,3 +27,6 @@ biblioteca que gerar o token : yarn add jsonwebtoken
 precisa instalar as tigame dele; yarn add @types/jsonwebtoken -D
 
 yarn dev dotenv
+
+para enviou de img:  yarn add multer
+yarn add @types/multer -D
