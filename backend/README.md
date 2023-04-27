@@ -17,7 +17,9 @@ precisar instalar as dipagem do cors: yarn add @types/cors -D
 
 para instlar o prima: yarn add prisma
 para instalar o prisma client, oq gerar o migrates: yarn add @prisma/client.
-depois de instlar oq é necessário, tem que inicializar; npx prima init
+depois de instlar oq é necessário, tem que inicializar; npx prisma init
+
+para criar migrate : yarn prisma migrate dev
 
 Biblieta para cigrafa senha do usuário no database: yarn add bcryptjs
 precisar tambem das tipagem do typecript: yarn add @types/bcryptjs -D
