@@ -18,6 +18,11 @@ import { ListByCategoryController } from './controllers/product/ListByCategoryCo
 import { CreateOrderController } from './controllers/order/CreateOrderController';
 import { RemoveOrderController } from './controllers/order/RemoveOrderController'; 
 import { AddItemController } from './controllers/order/AddItemController';
+import { RemoveItemController } from './controllers/order/RemoveItemController';
+import { SendOrderController } from './controllers/order/SendOrderController';
+import { ListOnderController } from './controllers/order/ListOrderController';
+import { DetailOrdersController } from './controllers/order/DetailOrdersController';
+import { FinalizandoOrderController } from './controllers/order/FinalizandoOrderController';
 
 const router = Router();
 const upload = multer(uploadConfig.upload('./tmp'))
@@ -42,5 +47,10 @@ router.get('/category/product', new ListByCategoryController().handle)
 router.post('/order', new CreateOrderController().handle)
 router.delete('/order', new RemoveOrderController().handle)
 router.post('/order/add', new AddItemController().handle)
+router.delete('/order/remove', new RemoveItemController().handle)
+router.put('/order/send', new SendOrderController().handle)
+router.get('/orders', new ListOnderController().handle)
+router.get('/order/detail', new DetailOrdersController().handle)
+router.put('/order/finalizando', new FinalizandoOrderController().handle)
 
 export { router }
