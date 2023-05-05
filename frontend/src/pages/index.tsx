@@ -2,16 +2,13 @@ import Link from 'next/link';
 import { useContext, FormEvent, useState } from 'react'
 import Head from 'next/head';
 import Imagem from 'next/image';
-
 import style from '../styles/Home.module.scss';
-
 import logoImg from '../../public/logo.svg';
-
 import  { Input }  from '../components/ui/Input'
 import { Button } from '../components/ui/button'
-
 import { AuthContext } from '../contexts/AuthContext';
 
+import  { canSSRGuest } from '../utils/canSSRGuest';
 
 export default function Home() {
 
@@ -24,8 +21,13 @@ export default function Home() {
   async function text(event: FormEvent){
     event.preventDefault()
     
-
+    if(email == '' || password == ''){
+      alert('Preencha os dados')
+      return;
+    }
+    setLoading(true)
     await signIn({email, password})
+    setLoading(false)
   }
   return (
     <>
@@ -43,7 +45,7 @@ export default function Home() {
             <Input placeholder='Digite sua senha' type='password'
             value={password} onChange={(v) => setPassword(v.target.value)}/>
           
-            <Button type='submit' loading={false} >Acessar</Button>          
+            <Button type='submit' loading={loading} >Acessar</Button>          
           </form>
           <Link href='/cadastro' className={style.text}>Não possui conta? faça já o seu cadastro</Link>
         </div>
@@ -53,3 +55,9 @@ export default function Home() {
     
   )
 }
+
+export const getServerSideProps = canSSRGuest( async (ctx)=> {
+  return{
+    props: {}
+  }
+})
