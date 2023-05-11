@@ -1,24 +1,122 @@
+import { useState } from 'react'
+
 import { canSSRAuth } from "@/utils/canSSRAuth"
 import Head from 'next/head'
 import Header from "@/components/Header"
-export default function Dashboard() {
+
+import { FiRefreshCcw } from 'react-icons/fi'
+import style from './style.module.scss';
+import { setupAPIClient } from "@/services/api";
+
+import Modal from 'react-modal';
+import { ModalIntem } from '@/components/ModalOrder'
+
+type OrderProps = {
+  id: string,
+  table: string | number,
+  status: boolean,
+  draft: boolean,
+  name: string | null;
+
+}
+
+interface HomeProps {
+  orders: OrderProps[]
+}
+
+export type OrderItemProps = {
+  id: string,
+  amount: string,
+  order_id: string,
+  product_id: string,
+  product: {
+    id: string,
+    name: string,
+    description: string,
+    price: string,
+    banner: string
+  }
+  order: {
+    id: string,
+    table: string | number,
+    status: boolean,
+    draft: boolean,
+    name: string | null;
+  }
+}
+
+export default function Dashboard({orders}: HomeProps) {
+
+  const [ordersList, setOrdersList] = useState(orders || [])
+  const [modalItem, setModalItem] = useState<OrderItemProps[] >()
+  const [modalVisible, setModalVisible] = useState(false);
+
+  function handleCloseModal(){
+    setModalVisible(false)
+  }
+
+  async function handleOpenModalView(id: string){
+    const apiClient = setupAPIClient()
+
+    const r = await apiClient.get('/order/detail', {
+      params: {
+        order_id: id
+      }
+    })
+
+    setModalItem(r.data)
+    setModalVisible(true)
+  }
+
+
+  Modal.setAppElement('#__next')
+
   return (
     <>
       <Head>
         <title>Painel - Sujeito Pizzaria</title>
       </Head>
       <Header/>
-      <div>
-        <h1>Painel</h1>
-      </div>
+      <main className={style.container}>
+        <div className={style.containerHeader}>
+          <h1>Últimos pedidos</h1>
+          <button> <FiRefreshCcw color='#3fffa3' size={25}/> </button>
+        </div>
+
+        <article className={style.listOreders}>
+          { ordersList.map((i)=> {
+            return(
+              <section className={style.orderItem} key={i.id}>
+              <button onClick={()=> handleOpenModalView(i.id)}>
+                <div className={style.tag}></div>
+                <span>Mesa {i.table}</span>
+              </button>
+            </section>
+            )
+          }) }
+        </article>
+        
+      </main>
+      {modalVisible && (
+        <ModalIntem 
+        isOpen={modalVisible}
+        onRequestClose={handleCloseModal}
+        order={modalItem}
+        
+        />
+      )}
     </>
   )
 }
 
 
-export const getServerSideProps = canSSRAuth(async (ctx) => {
-
+export const getServerSideProps = canSSRAuth(async (ctx: any) => {
+  const apiClient = setupAPIClient(ctx)
+  const r = await apiClient.get('/orders')
+  
   return{
-    props: {}
+    props: {
+      orders: r.data
+    }
   }
 })

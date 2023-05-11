@@ -1,6 +1,7 @@
+
 import Head from "next/head"
 import Header from "@/components/Header"
-import {ChangeEvent, useState , FormEvent} from 'react';
+import {ChangeEvent, useState , FormEvent, cache} from 'react';
 
 import { canSSRAuth } from "@/utils/canSSRAuth"
 import style from './style.module.scss'
@@ -15,7 +16,11 @@ interface CategoryProps {
     categoryList: ItemProps[]
 }
 export default function Product({categoryList}: CategoryProps) {
-    console.log(categoryList)
+    const [name, setName] = useState('');
+    const [price, setPrice] = useState('');
+    const [description, setDescription] = useState('')  
+
+
     const [avatarurl, setAvatarurl] = useState('')
     const [imagemAvatar, setImagemAvatar] = useState<File | null>(null);
 
@@ -42,7 +47,33 @@ export default function Product({categoryList}: CategoryProps) {
         //console.log(category[e.target.value])
         setCategorySelectd(e.target.value)
       }
+      const handleRegister = async (e:FormEvent) => {
+        e.preventDefault();
 
+        try{
+          const data = new FormData();
+           if(name === '' || price === '' || description === '' || imagemAvatar === null){
+            return alert('preenchar todos os campos!')
+           }
+           data.append('name', name)
+           data.append('price', price)
+           data.append('description', description),
+           data.append('category_id', category[categorySelected].id);
+           data.append('file', imagemAvatar)
+
+           const apliClient = setupAPIClient()
+           await apliClient.post('/product', data)
+           alert('cadastrado com sucesso')
+
+        } catch(error){
+          console.log(error)
+        }
+        setName(''),
+        setPrice(''),
+        setDescription(''),
+        setImagemAvatar(null),
+        setAvatarurl('')
+      }
   return (
     <>
     <Head>
@@ -51,7 +82,7 @@ export default function Product({categoryList}: CategoryProps) {
     <Header/>
     <main className={style.container}>
         <h1>Novo Produto</h1>
-        <form className={style.form}>
+        <form className={style.form} onSubmit={handleRegister}>
             <label className={style.labelAvatar}>
                 <span><FiUpload size={30} color='#fff'/></span>
                 <input type='file' accept="image/png, image/jpeg" onChange={handleFile}/>
@@ -67,9 +98,11 @@ export default function Product({categoryList}: CategoryProps) {
                 })}
 
             </select>
-            <input placeholder="Digite o novo do produto" className={style.input}/>
-            <input placeholder="preço do produto" className={style.input}/>
-            <textarea placeholder="Descreva seu produto" className={style.input}/>
+            <input placeholder="Digite o novo do produto" className={style.input} value={name}
+            onChange={(v)=> setName(v.target.value)}
+            />
+            <input placeholder="preço do produto" className={style.input} value={price} onChange={ v => setPrice(v.target.value)}/>
+            <textarea placeholder="Descreva seu produto" className={style.input} value={description} onChange={v => setDescription(v.target.value)}/>
             <button type='submit' className={style.buttonAdd}>Cadastrar</button>
         </form>
     </main>
