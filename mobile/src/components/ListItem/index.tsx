@@ -5,13 +5,18 @@ import { ItemnsProps } from '../../pages/Order'
 
 interface ItemProps {
     data: ItemnsProps
+    deleteItem: (item_id:string) => void;
 }
-export default function ListItem({data}: ItemProps) {
+export default function ListItem({data, deleteItem}: ItemProps) {
+  function handleDeleteItem(){
+    deleteItem(data.id)
+  }
+
   return (
     <View style={style.container}>
         <Text style={style.item}>{data.amount} - {data.name}</Text>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleDeleteItem}>
             <Feather name='trash-2' color='#ff3f4b' size={25}/>
         </TouchableOpacity>
     </View>

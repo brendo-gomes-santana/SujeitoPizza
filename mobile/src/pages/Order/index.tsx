@@ -7,6 +7,10 @@ import { api } from '../../services/api'
 
 import ModalPicker from '../../components/ModalPicker'
 import ListItem from '../../components/ListItem'
+
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { StackPramsList } from '../../routes/app.routes'
+
 type RouteDetailParams = {
     Order: {
         number: string | number;
@@ -44,7 +48,7 @@ export default function Order() {
     const [items, setItems] = useState<ItemnsProps[]>([])
 
     const route = useRoute<OrderRouteProps>()
-    const navigate = useNavigation()
+    const navigate = useNavigation<NativeStackNavigationProp<StackPramsList>>()
 
     const [ModalCategoryVisible, setModalCategoryVisible] = useState(false)
     const [ModalProductVisible, setModalProductVisible] = useState(false)
@@ -101,6 +105,23 @@ export default function Order() {
 
     setItems(oldArray => [...oldArray, data])
    }
+
+   async function handleDeleteItem(item_id:string){
+     await api.delete('/order/remove', {
+        params: {
+            item_id
+        }
+     })
+    let removeItem = items.filter(item => {
+        return (item.id !== item_id)
+    })
+    
+    setItems(removeItem)
+   }
+
+   function handleFinishOrder(){
+    navigate.navigate('FinishOrder')
+   }
   return (
     <SafeAreaView style={style.container}>
         <View style={style.header}>
@@ -142,7 +163,8 @@ export default function Order() {
 
             <TouchableOpacity 
             disabled={items.length === 0}
-            style={[style.button, {opacity: items.length === 0 ? 0.3 : 1}]}>
+            style={[style.button, {opacity: items.length === 0 ? 0.3 : 1}]}
+            onPress={handleFinishOrder}>
                 <Text style={style.buttonText}>Avançar</Text>
             </TouchableOpacity>
         </View>
@@ -150,7 +172,7 @@ export default function Order() {
         style={{flex: 1, marginTop: 24}}
         data={items}
         keyExtractor={(item)=> item.id}
-        renderItem={({ item })=> <ListItem data={item}/> } />
+        renderItem={({ item })=> <ListItem data={item} deleteItem={handleDeleteItem}/> } />
         
         <Modal 
             transparent={true}

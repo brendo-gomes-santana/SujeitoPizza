@@ -42,6 +42,7 @@ export function AuthProvider({children}: AuthProviderProps){
 
     useEffect(()=> {
         (async()=> {
+
             //pegar os dados salvos
             const userInfor = await AsyncStorage.getItem('@sujeitopizzaria')
             let hasUser: UserProps = JSON.parse(userInfor || '{}')
@@ -49,20 +50,21 @@ export function AuthProvider({children}: AuthProviderProps){
             //verificar se recebeu
             if(Object.keys(hasUser).length > 0){
                 api.defaults.headers.common['Authorization'] = `Bearer ${hasUser.token}`
-
                 setUser({
                     id: hasUser.id,
                     name: hasUser.name,
                     email: hasUser.email,
                     token: hasUser.token
                 })
-                setLoading(false)
+                
             }
+            setLoading(false)
         })()
     },[])
 
     async function SignIn ({email, password}: SignInProps){
         setLoadingAuth(true)
+        setLoading(false)
         try{
             const r = await api.post('/session', {
                 email: email,
@@ -80,10 +82,13 @@ export function AuthProvider({children}: AuthProviderProps){
                 email,
                 token
             })
+
             setLoadingAuth(false)
+        
         }catch(error){
             console.log('erro ao acessar', error)
             setLoadingAuth(false)
+            setLoading(false)
         }
 
     }
@@ -98,6 +103,7 @@ export function AuthProvider({children}: AuthProviderProps){
                 token: ''
             })
         })
+        setLoading(false)
     }
 
     return(

@@ -9,7 +9,6 @@ import { AuthContext } from "../contexts/AuthContext";
 function Routes(){
     const { isAuthenticated, loading} = useContext(AuthContext)
 
-
     if(loading){
         return(
             <View style={{

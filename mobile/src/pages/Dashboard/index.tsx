@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackPramsList } from '../../routes/app.routes';
@@ -6,7 +6,9 @@ import { StackPramsList } from '../../routes/app.routes';
 //SefeAreaView é para quem ta usando IPhone, que tem a area de cima com a camera
 import {SafeAreaView, Text, TextInput,TouchableOpacity ,StyleSheet } from 'react-native'
 import { api } from '../../services/api';
+import { AuthContext } from '../../contexts/AuthContext';
 export default function Dashboard() {
+  const { SignOut } = useContext(AuthContext)
   const navigation = useNavigation<NativeStackNavigationProp<StackPramsList>>()
 
   const [numeroDaMesa, setNumeroDaMesa] = useState('')
@@ -32,6 +34,9 @@ export default function Dashboard() {
 
   return (
     <SafeAreaView style={style.container}>
+      <TouchableOpacity onPress={SignOut}>
+        <Text>SAIR</Text>
+      </TouchableOpacity>
       <Text style={style.title}>Novo Pedido</Text>
       <TextInput
         style={style.input}
