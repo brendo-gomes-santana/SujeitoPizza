@@ -120,7 +120,10 @@ export default function Order() {
    }
 
    function handleFinishOrder(){
-    navigate.navigate('FinishOrder')
+    navigate.navigate('FinishOrder', {
+        number: route.params?.number,
+        order_id: route.params?.order_id
+    })
    }
   return (
     <SafeAreaView style={style.container}>
